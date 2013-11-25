@@ -70,13 +70,28 @@ module TypedLambdaCalculus where
   zero == zero = true
   zero == suc n₂ = false
   suc n₁ == zero = false
-  suc n₁ == suc n₂ = n₁ == n₂ 
+  suc n₁ == suc n₂ = n₁ == n₂
+
+  _/=_ : ℕ → ℕ → Bool
+  n /= m = not (n == m)
+
+  import Data.Nat.Properties
+  open import Relation.Binary using (module StrictTotalOrder)
+  open import Data.AVL.Sets (StrictTotalOrder.isStrictTotalOrder Data.Nat.Properties.strictTotalOrder)
+  
+  FV : E → ⟨Set⟩
+  FV (num x) = empty
+  FV (var x) = singleton x
+  FV (e₁ ∙ e₂) = union (FV e₁) (FV e₂) 
+  FV (Λ x ∷ T , e) = delete x (FV e)
 
   _[_/_] : E → V → E → E
   (num x)[ v / s ] = num x
   (var x)[ v / s ] = if x == v then s else var x
   (e₁ ∙ e₂)[ v / s ] = e₁ [ v / s ] ∙ e₂ [ v / s ]
-  (Λ y ∷ T , e) [ x / s ] = Λ y ∷ T , e [ x / s ] -- TODO check for x ≠ y and y ∉ FV(s)
+  (Λ y ∷ T , e) [ x / s ] = if x /= y ∧ y ∈? (FV s)
+                            then Λ y ∷ T , e [ x / s ]
+                            else Λ y ∷ T , e
 
   infixr 1 _⇒_
   
