@@ -5,7 +5,7 @@ open import Data.Product
 
 open import language
 open import theorems
-
+open import helper
 
 module languages.typedLambdaCalculus where
 
@@ -21,15 +21,6 @@ module languages.typedLambdaCalculus where
     var : V → E -- variables
     _∙_ : E → E → E -- application
     Λ_∷_,_ : V → T → E → E -- abstraction; λ is a reserved word, therefore we use Λ
-
-  _==_ : ℕ → ℕ → Bool
-  zero == zero = true
-  zero == suc n₂ = false
-  suc n₁ == zero = false
-  suc n₁ == suc n₂ = n₁ == n₂
-
-  _/=_ : ℕ → ℕ → Bool
-  n /= m = not (n == m)
 
   import Data.Nat.Properties
   open import Relation.Binary using (module StrictTotalOrder)
