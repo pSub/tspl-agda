@@ -1,4 +1,5 @@
 open import Data.Bool
+open import Data.Char
 open import Relation.Binary.Core
 open import Relation.Binary.PropositionalEquality
 
@@ -20,10 +21,6 @@ module interlanguage where
     open EraseEvaluation typed.language
                          untyped.language
                          erase
-
-    import Data.Nat.Properties
-    open import Relation.Binary using (module StrictTotalOrder)
-    open import Data.AVL.Sets (StrictTotalOrder.isStrictTotalOrder Data.Nat.Properties.strictTotalOrder)
 
     -- TODO Would be nice to proof this, but the types get really ugly.
     postulate FV≡ : ∀ e y → y ∈? (typed.FV e) ≡ y ∈? (untyped.FV (erase e))

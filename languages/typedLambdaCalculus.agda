@@ -1,16 +1,17 @@
 open import Data.Bool hiding (T)
 open import Relation.Nullary
 open import Data.Nat
+open import Data.Char
 open import Data.Product
+open import Data.List renaming (_∷_ to cons)
 
 open import language
 open import theorems
 open import helper
 
 module languages.typedLambdaCalculus where
-
   V : Set
-  V = ℕ
+  V = Char
 
   data T : Set where
     Nat : T
@@ -20,16 +21,12 @@ module languages.typedLambdaCalculus where
     num : ℕ → E -- numbers
     var : V → E -- variables
     _∙_ : E → E → E -- application
-    Λ_∷_,_ : V → T → E → E -- abstraction; λ is a reserved word, therefore we use Λ
-
-  import Data.Nat.Properties
-  open import Relation.Binary using (module StrictTotalOrder)
-  open import Data.AVL.Sets (StrictTotalOrder.isStrictTotalOrder Data.Nat.Properties.strictTotalOrder)
+    Λ_∷_,_ : V → T → E → E -- abstraction; λ is a reserved word, therefore we use Λ 
   
-  FV : E → ⟨Set⟩
-  FV (num x) = empty
-  FV (var x) = singleton x
-  FV (e₁ ∙ e₂) = union (FV e₁) (FV e₂) 
+  FV : E → List Char
+  FV (num x) = []
+  FV (var x) = [ x ]
+  FV (e₁ ∙ e₂) = (FV e₁) ++ (FV e₂) 
   FV (Λ x ∷ T , e) = delete x (FV e)
 
   _[_/_] : E → V → E → E
@@ -73,7 +70,7 @@ module languages.typedLambdaCalculus where
   module SubjectExpansionProof where
     open SubjectExpansion language
 
-    e⇒e' : (Λ 1 ∷ Nat , num 1) ∙ (num 1 ∙ num 1) ⇒ num 1
+    e⇒e' : (Λ 'x' ∷ Nat , num 1) ∙ (num 1 ∙ num 1) ⇒ num 1
     e⇒e' = contraction
 
     e'∷Nat : ∅ ⊢ num 1 ∷ Nat

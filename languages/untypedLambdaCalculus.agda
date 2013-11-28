@@ -2,6 +2,8 @@ open import Data.Bool hiding (T)
 open import Relation.Nullary
 open import Data.Nat
 open import Data.Product
+open import Data.Char
+open import Data.List
 
 open import language
 open import theorems
@@ -11,7 +13,7 @@ open import helper
 module languages.untypedLambdaCalculus where
 
   V : Set
-  V = ℕ
+  V = Char
 
   data E : Set where
     num : ℕ → E -- numbers
@@ -19,14 +21,10 @@ module languages.untypedLambdaCalculus where
     _∙_ : E → E → E -- application
     Λ_,_ : V → E → E -- abstraction; λ is a reserved word, therefore we use Λ
 
-  import Data.Nat.Properties
-  open import Relation.Binary using (module StrictTotalOrder)
-  open import Data.AVL.Sets (StrictTotalOrder.isStrictTotalOrder Data.Nat.Properties.strictTotalOrder)
-  
-  FV : E → ⟨Set⟩
-  FV (num x) = empty
-  FV (var x) = singleton x
-  FV (e₁ ∙ e₂) = union (FV e₁) (FV e₂) 
+  FV : E → List Char
+  FV (num x) = []
+  FV (var x) = [ x ]
+  FV (e₁ ∙ e₂) = (FV e₁) ++ (FV e₂) 
   FV (Λ x , e) = delete x (FV e)
 
   _[_/_] : E → V → E → E
