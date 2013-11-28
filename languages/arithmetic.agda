@@ -26,7 +26,7 @@ module languages.arithmetic where
     literal  : ∀ {n Γ} →  Γ ⊢ ⌜ n ⌝ ∷ Nat
     addition : ∀ {e₁ e₂ Γ} → Γ ⊢ e₁ ∷ Nat → Γ ⊢ e₂ ∷ Nat → Γ ⊢ e₁ ⊕ e₂ ∷ Nat
 
-  arithmetic : Language
+  arithmetic : TypedLanguage
   arithmetic = record
                { E = E
                ; _⇒_ = _⇒_

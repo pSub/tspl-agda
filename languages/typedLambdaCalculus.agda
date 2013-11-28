@@ -69,8 +69,8 @@ module languages.typedLambdaCalculus where
     abs : ∀ {x t₂ Γ T₁ T₂} → (Γ , x ∷ T₁) ⊢ t₂ ∷ T₂ → Γ ⊢ (Λ x ∷ T₁ , t₂) ∷ (T₁ ⟶ T₂)
     app : ∀ {t₁ t₂ T₁ T₂ Γ} → Γ ⊢ t₁ ∷ (T₁ ⟶ T₂) → Γ ⊢ t₂ ∷ T₁ → Γ ⊢ t₁ ∙ t₂ ∷ T₂
 
-  typedLambdaCalculus : Language
-  typedLambdaCalculus = record
+  language : TypedLanguage
+  language = record
                { E = E
                ; _⇒_ = _⇒_
                ; T = T
@@ -80,7 +80,7 @@ module languages.typedLambdaCalculus where
                }
 
   module SubjectExpansionProof where
-    open SubjectExpansion typedLambdaCalculus
+    open SubjectExpansion language
 
     e⇒e' : (Λ 1 ∷ Nat , num 1) ∙ (num 1 ∙ num 1) ⇒ num 1
     e⇒e' = contraction
