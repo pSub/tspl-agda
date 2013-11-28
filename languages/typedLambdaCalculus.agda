@@ -21,7 +21,11 @@ module languages.typedLambdaCalculus where
     num : ℕ → E -- numbers
     var : V → E -- variables
     _∙_ : E → E → E -- application
-    Λ_∷_,_ : V → T → E → E -- abstraction; λ is a reserved word, therefore we use Λ 
+    Λ_∷_,_ : V → T → E → E -- abstraction; λ is a reserved word, therefore we use Λ
+
+  data Val : E → Set where
+    num : ∀ {n} → Val (num n)
+    abs : ∀ {x T e} → Val (Λ x ∷ T , e)
   
   FV : E → List Char
   FV (num x) = []
@@ -60,6 +64,7 @@ module languages.typedLambdaCalculus where
   language : TypedLanguage
   language = record
                { E = E
+               ; Val = Val
                ; _⇒_ = _⇒_
                ; T = T
                ; V = V

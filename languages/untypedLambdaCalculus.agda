@@ -11,7 +11,6 @@ open import helper
 
 
 module languages.untypedLambdaCalculus where
-
   V : Set
   V = Char
 
@@ -20,6 +19,10 @@ module languages.untypedLambdaCalculus where
     var : V → E -- variables
     _∙_ : E → E → E -- application
     Λ_,_ : V → E → E -- abstraction; λ is a reserved word, therefore we use Λ
+
+  data Val : E → Set where
+    num : ∀ {n} → Val (num n)
+    abs : ∀ {x e} → Val (Λ x , e)
 
   FV : E → List Char
   FV (num x) = []
@@ -45,6 +48,7 @@ module languages.untypedLambdaCalculus where
   language : UntypedLanguage
   language = record
                { E = E
+               ; Val = Val
                ; _⇒_ = _⇒_
                ; V = V
                }

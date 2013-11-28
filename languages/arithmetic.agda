@@ -7,6 +7,9 @@ module languages.arithmetic where
     ⌜_⌝ : ℕ → E
     _⊕_ : E → E → E
 
+  data Val : E → Set where
+    num : ∀ {n} → Val ⌜ n ⌝
+
   infixr 1 _⇒_
     
   data _⇒_ : E → E → Set where
@@ -29,6 +32,7 @@ module languages.arithmetic where
   arithmetic : TypedLanguage
   arithmetic = record
                { E = E
+               ; Val = Val
                ; _⇒_ = _⇒_
                ; T = T
                ; V = V

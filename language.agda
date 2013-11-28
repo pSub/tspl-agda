@@ -6,6 +6,7 @@ record TypedLanguage : Set₁ where
   infixr 1 _⇒_
   field
     E     : Set -- expressions
+    Val   : E → Set -- values
     _⇒_   : E → E → Set -- reduction relation
     T     : Set -- types
     V     : Set -- variables
@@ -16,6 +17,7 @@ record UntypedLanguage : Set₁ where
   infixr 1 _⇒_
   field
     E     : Set -- expressions
+    Val   : E → Set -- values
     _⇒_   : E → E → Set -- reduction relation
     V     : Set -- variables
 
