@@ -36,7 +36,7 @@ module languages.typedLambdaCalculus where
   (num x)[ v / s ] = num x
   (var x)[ v / s ] = if x == v then s else var x
   (e₁ ∙ e₂)[ v / s ] = e₁ [ v / s ] ∙ e₂ [ v / s ]
-  (Λ y ∷ T , e) [ x / s ] = if x /= y ∧ y ∈? (FV s)
+  (Λ y ∷ T , e) [ x / s ] = if x /= y ∧ not (y ∈? (FV s))
                             then Λ y ∷ T , e [ x / s ]
                             else Λ y ∷ T , e
 
