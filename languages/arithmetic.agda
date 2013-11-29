@@ -75,3 +75,14 @@ module languages.arithmetic where
     proof (addition {e₁ ⊕ .e₁'} {e₂ ⊕ e₃} e₁∷T e₂∷T) | e₁* ⊕ e₁' , inj₁ (congruence1 e₁⇒e₁*) = (e₁* ⊕ e₁') ⊕ (e₂ ⊕ e₃) , inj₁ (congruence1 (congruence1 e₁⇒e₁*))
     proof (addition {.e₁ ⊕ e₁'} {e₂ ⊕ e₃} e₁∷T e₂∷T) | e₁ ⊕ e₁'* , inj₁ (congruence2 e₁'⇒e₁'*) = ((e₁ ⊕ e₁'*) ⊕ (e₂ ⊕ e₃)) , (inj₁ (congruence1 (congruence2 e₁'⇒e₁'*)))
     proof (addition {e₁ ⊕ e₁'} {e₂ ⊕ e₃} e₁∷T e₂∷T) | proj₁ ⊕ proj₂ , inj₂ ()
+
+  module PreservationProof where
+    open Preservation language
+
+    proof : preservation
+    proof literal ()
+    proof (addition e₁∷T e₂∷T) (contraction n m) = literal
+    proof (addition e₁∷T e₂∷T) (congruence1 e₁⇒e₁') with proof e₁∷T e₁⇒e₁'
+    ... | e₁'∷T = addition e₁'∷T e₂∷T
+    proof (addition e₁∷T e₂∷T) (congruence2 e₂⇒e₂') with proof e₂∷T e₂⇒e₂'
+    ... | e₂'∷T = addition e₁∷T e₂'∷T
