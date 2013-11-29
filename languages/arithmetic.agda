@@ -1,4 +1,7 @@
 open import Data.Nat
+open import Data.Sum
+open import Data.Product
+
 open import language
 open import theorems
 
@@ -29,8 +32,8 @@ module languages.arithmetic where
     literal  : ∀ {n Γ} →  Γ ⊢ ⌜ n ⌝ ∷ Nat
     addition : ∀ {e₁ e₂ Γ} → Γ ⊢ e₁ ∷ Nat → Γ ⊢ e₂ ∷ Nat → Γ ⊢ e₁ ⊕ e₂ ∷ Nat
 
-  arithmetic : TypedLanguage
-  arithmetic = record
+  language : TypedLanguage
+  language = record
                { E = E
                ; Val = Val
                ; _⇒_ = _⇒_
@@ -41,9 +44,34 @@ module languages.arithmetic where
                }
 
   module SubjectExpansionProof where
-    open SubjectExpansion arithmetic
+    open SubjectExpansion language
 
     proof : subjectexpansion
     proof (contraction n m) literal = addition literal literal
     proof (congruence1 e⇒e') (addition e₁∷Nat e₂∷Nat) = addition (proof e⇒e' e₁∷Nat) e₂∷Nat
     proof (congruence2 e⇒e') (addition e₁∷Nat e₂∷Nat) = addition e₁∷Nat (proof e⇒e' e₂∷Nat)
+
+  module ProgressProof where
+    open Progress language
+
+    proof : progress
+    proof (literal {n}) = ⌜ n ⌝ , (inj₂ num)
+    proof (addition {⌜ n₁ ⌝} {⌜ n₂ ⌝} literal literal) = ⌜ n₁ + n₂ ⌝ , inj₁ (contraction n₁ n₂)
+    proof (addition {⌜ n ⌝} {e₂ ⊕ e₂'} literal e₂∷T) with proof e₂∷T
+    proof (addition {⌜ n ⌝} {e₂ ⊕ e₂'} literal e₂∷T) | ⌜ x ⌝ , inj₁ e₂⊕e₂'⇒⌜x⌝ = ⌜ n ⌝ ⊕ ⌜ x ⌝ , inj₁ (congruence2 e₂⊕e₂'⇒⌜x⌝)
+    proof (addition {⌜ n ⌝} {e₂ ⊕ e₂'} literal e₂∷T) | ⌜ x ⌝ , inj₂ ()
+    proof (addition {⌜ n ⌝} {e₂ ⊕ .e₂'} literal e₂∷T) | e₂* ⊕ e₂' , inj₁ (congruence1 e₂⇒e₂*) = ⌜ n ⌝ ⊕ (e₂* ⊕ e₂') , inj₁ (congruence2 (congruence1 e₂⇒e₂*))
+    proof (addition {⌜ n ⌝} {.e₂ ⊕ e₂'} literal e₂∷T) | e₂ ⊕ e₂'* , inj₁ (congruence2 e₂'⇒e₂'*) = ⌜ n ⌝ ⊕ (e₂ ⊕ e₂'*) , inj₁ (congruence2 (congruence2 e₂'⇒e₂'*))
+    proof (addition {⌜ n ⌝} {e₂ ⊕ e₂'} literal e₂∷T) | proj₁ ⊕ proj₂ , inj₂ ()
+    proof (addition {e₁ ⊕ e₁'} {⌜ n ⌝} e₁∷T e₂∷T) with proof e₁∷T
+    proof (addition {e₁ ⊕ e₁'} {⌜ n ⌝} e₁∷T e₂∷T) | ⌜ x ⌝ , inj₁ e₁⊕e₁'⇒⌜x⌝ = ⌜ x ⌝ ⊕ ⌜ n ⌝ , inj₁ (congruence1 e₁⊕e₁'⇒⌜x⌝)
+    proof (addition {e₁ ⊕ e₁'} {⌜ n ⌝} e₁∷T e₂∷T) | ⌜ x ⌝ , inj₂ ()
+    proof (addition {e₁ ⊕ .e₁'} {⌜ n ⌝} e₁∷T e₂∷T) | e₁* ⊕ e₁' , inj₁ (congruence1 e₁⇒e₁*) = (e₁* ⊕ e₁') ⊕ ⌜ n ⌝ , inj₁ (congruence1 (congruence1 e₁⇒e₁*))
+    proof (addition {.e₁ ⊕ e₁'} {⌜ n ⌝} e₁∷T e₂∷T) | e₁ ⊕ e₁'* , inj₁ (congruence2 e₁'⇒e₁'*) = (e₁ ⊕ e₁'*) ⊕ ⌜ n ⌝ , inj₁ (congruence1 (congruence2 e₁'⇒e₁'*))
+    proof (addition {e₁ ⊕ e₁'} {⌜ x ⌝} e₁∷T e₂∷T) | proj₁ ⊕ proj₂ , inj₂ ()
+    proof (addition {e₁ ⊕ e₁'} {e₂ ⊕ e₃} e₁∷T e₂∷T) with proof e₁∷T
+    proof (addition {e₁ ⊕ e₁'} {e₂ ⊕ e₃} e₁∷T e₂∷T) | ⌜ n ⌝ , inj₁ e₁⊕e₁'⇒⌜n⌝ = ⌜ n ⌝ ⊕ (e₂ ⊕ e₃) , inj₁ (congruence1 e₁⊕e₁'⇒⌜n⌝)
+    proof (addition {e₁ ⊕ e₁'} {e₂ ⊕ e₃} e₁∷T e₂∷T) | ⌜ x ⌝ , inj₂ ()
+    proof (addition {e₁ ⊕ .e₁'} {e₂ ⊕ e₃} e₁∷T e₂∷T) | e₁* ⊕ e₁' , inj₁ (congruence1 e₁⇒e₁*) = (e₁* ⊕ e₁') ⊕ (e₂ ⊕ e₃) , inj₁ (congruence1 (congruence1 e₁⇒e₁*))
+    proof (addition {.e₁ ⊕ e₁'} {e₂ ⊕ e₃} e₁∷T e₂∷T) | e₁ ⊕ e₁'* , inj₁ (congruence2 e₁'⇒e₁'*) = ((e₁ ⊕ e₁'*) ⊕ (e₂ ⊕ e₃)) , (inj₁ (congruence1 (congruence2 e₁'⇒e₁'*)))
+    proof (addition {e₁ ⊕ e₁'} {e₂ ⊕ e₃} e₁∷T e₂∷T) | proj₁ ⊕ proj₂ , inj₂ ()
