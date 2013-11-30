@@ -2,6 +2,7 @@ open import Data.Bool hiding (T)
 open import Relation.Nullary
 open import Data.Nat
 open import Data.Char
+open import Data.Sum
 open import Data.Product
 open import Data.List renaming (_∷_ to cons)
 
