@@ -15,23 +15,23 @@ module languages.untypedLambdaCalculus where
   V = Char
 
   data E : Set where
-    num : ℕ → E -- numbers
+    ⌜_⌝ : ℕ → E -- numbers
     var : V → E -- variables
     _∙_ : E → E → E -- application
     Λ_,_ : V → E → E -- abstraction; λ is a reserved word, therefore we use Λ
 
   data Val : E → Set where
-    num : ∀ {n} → Val (num n)
+    num : ∀ {n} → Val ⌜ n ⌝
     abs : ∀ {x e} → Val (Λ x , e)
 
   FV : E → List Char
-  FV (num x) = []
+  FV ⌜ n ⌝ = []
   FV (var x) = [ x ]
   FV (e₁ ∙ e₂) = (FV e₁) ++ (FV e₂) 
   FV (Λ x , e) = delete x (FV e)
 
   _[_/_] : E → V → E → E
-  (num x)[ v / s ] = num x
+  ⌜ x ⌝ [ v / s ] = ⌜ x ⌝
   (var x)[ v / s ] = if x == v then s else var x
   (e₁ ∙ e₂)[ v / s ] = e₁ [ v / s ] ∙ e₂ [ v / s ]
   (Λ y , e) [ x / s ] = if x /= y ∧ not (y ∈? (FV s))
@@ -52,3 +52,4 @@ module languages.untypedLambdaCalculus where
                ; _⇒_ = _⇒_
                ; V = V
                }
+

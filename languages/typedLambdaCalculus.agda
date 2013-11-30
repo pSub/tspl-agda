@@ -19,23 +19,23 @@ module languages.typedLambdaCalculus where
     _⟶_ : T → T → T 
 
   data E : Set where
-    num : ℕ → E -- numbers
+    ⌜_⌝ : ℕ → E -- numbers
     var : V → E -- variables
     _∙_ : E → E → E -- application
     Λ_∷_,_ : V → T → E → E -- abstraction; λ is a reserved word, therefore we use Λ
 
   data Val : E → Set where
-    num : ∀ {n} → Val (num n)
+    num : ∀ {n} → Val ⌜ n ⌝
     abs : ∀ {x T e} → Val (Λ x ∷ T , e)
   
   FV : E → List Char
-  FV (num x) = []
+  FV ⌜ x ⌝ = []
   FV (var x) = [ x ]
   FV (e₁ ∙ e₂) = (FV e₁) ++ (FV e₂) 
   FV (Λ x ∷ T , e) = delete x (FV e)
 
   _[_/_] : E → V → E → E
-  (num x)[ v / s ] = num x
+  ⌜ x ⌝ [ v / s ] = ⌜ x ⌝
   (var x)[ v / s ] = if x == v then s else var x
   (e₁ ∙ e₂)[ v / s ] = e₁ [ v / s ] ∙ e₂ [ v / s ]
   (Λ y ∷ T , e) [ x / s ] = if x /= y ∧ not (y ∈? (FV s))
@@ -57,7 +57,7 @@ module languages.typedLambdaCalculus where
     yes : ∀ {x T Γ'} → (x , T) ∈ (Γ' , x ∷ T)
 
   data _⊢_∷_ : Γ → E → T → Set where
-    num : ∀ {n Γ} → Γ ⊢ num n ∷ Nat
+    num : ∀ {n Γ} → Γ ⊢ ⌜ n ⌝ ∷ Nat
     var : ∀ {x T Γ} → (x , T) ∈ Γ → Γ ⊢ var x ∷ T
     abs : ∀ {x t₂ Γ T₁ T₂} → (Γ , x ∷ T₁) ⊢ t₂ ∷ T₂ → Γ ⊢ (Λ x ∷ T₁ , t₂) ∷ (T₁ ⟶ T₂)
     app : ∀ {t₁ t₂ T₁ T₂ Γ} → Γ ⊢ t₁ ∷ (T₁ ⟶ T₂) → Γ ⊢ t₂ ∷ T₁ → Γ ⊢ t₁ ∙ t₂ ∷ T₂
@@ -77,10 +77,10 @@ module languages.typedLambdaCalculus where
   module SubjectExpansionProof where
     open SubjectExpansion language
 
-    e⇒e' : (Λ 'x' ∷ Nat , num 1) ∙ (num 1 ∙ num 1) ⇒ num 1
+    e⇒e' : (Λ 'x' ∷ Nat , ⌜ 1 ⌝) ∙ (⌜ 1 ⌝ ∙ ⌜ 1 ⌝) ⇒ ⌜ 1 ⌝
     e⇒e' = contraction
 
-    e'∷Nat : ∅ ⊢ num 1 ∷ Nat
+    e'∷Nat : ∅ ⊢ ⌜ 1 ⌝ ∷ Nat
     e'∷Nat = num
 
     proof : ¬ subjectexpansion
