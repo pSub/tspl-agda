@@ -86,3 +86,23 @@ module languages.typedLambdaCalculus where
     proof : ¬ subjectexpansion
     proof f with f e⇒e' e'∷Nat
     proof f | app (abs num) (app () num)
+
+  module ProgressProof where
+    open Progress language
+
+    proof : progress
+    proof (num {n}) = ⌜ n ⌝ , inj₂ num
+    proof (var ())
+    proof (abs {x} {e} {.∅} {T} e∷T) = (Λ x ∷ T , e) , inj₂ abs
+    proof (app {⌜ n ⌝} () e₂∷T)
+    proof (app {var x} (var ()) e₂∷T)
+    proof (app {t₁ ∙ t₂} e₁∷T e₂∷T) with proof e₁∷T
+    proof (app {t₁ ∙ t₂} {e₂} e₁∷T e₂∷T) | ⌜ n ⌝ , inj₁ t₁∙t₂⇒n = ⌜ n ⌝ ∙ e₂ , inj₁ (congruence1 t₁∙t₂⇒n)
+    ... | ⌜ n ⌝ , inj₂ ()
+    proof (app {t₁ ∙ t₂} {e₂} e₁∷T e₂∷T) | var x , inj₁ t₁∙t₂⇒x = var x ∙ e₂ , inj₁ (congruence1 t₁∙t₂⇒x)
+    ... | var x , inj₂ ()
+    proof (app {t₁ ∙ t₂} {e₂} e₁∷T e₂∷T) | t₁' ∙ t₂' , inj₁ t₁∙t₂⇒t₁'∙t₂' = (t₁' ∙ t₂') ∙ e₂ , inj₁ (congruence1 t₁∙t₂⇒t₁'∙t₂')
+    ... | t₁' ∙ t₂' , inj₂ ()
+    proof (app {t₁ ∙ t₂} {e₂} e₁∷T e₂∷T) | (Λ x ∷ T' , e₁') , inj₁ t₁∙t₂⇒Λ = (Λ x ∷ T' , e₁') ∙ e₂ , inj₁ (congruence1 t₁∙t₂⇒Λ)
+    ... | (Λ x ∷ T' , e₁') , inj₂ ()
+    proof (app {Λ x ∷ T , e₁} {e₂} e₁∷T e₂∷T) = e₁ [ x / e₂ ] , inj₁ contraction
