@@ -11,6 +11,7 @@ record TypedLanguage : Set₁ where
     T     : Set -- types
     V     : Set -- variables
     Γ     : Set -- context
+    ∅     : Γ   -- empty context
     _⊢_∷_ : Γ → E → T → Set -- type rules
 
 record UntypedLanguage : Set₁ where

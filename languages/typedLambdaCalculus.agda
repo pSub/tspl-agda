@@ -69,6 +69,7 @@ module languages.typedLambdaCalculus where
                ; T = T
                ; V = V
                ; Γ = Γ
+               ; ∅ = ∅
                ; _⊢_∷_ = _⊢_∷_
                }
 

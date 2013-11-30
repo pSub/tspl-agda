@@ -24,7 +24,8 @@ module languages.arithmetic where
     Nat : T
 
   data V : Set where -- empty set of variables
-  data Γ : Set where -- empty context
+  data Γ : Set where
+    ∅ : Γ
 
   infixr 1 _⊢_∷_
 
@@ -40,6 +41,7 @@ module languages.arithmetic where
                ; T = T
                ; V = V
                ; Γ = Γ
+               ; ∅ = ∅
                ; _⊢_∷_ = _⊢_∷_
                }
 
