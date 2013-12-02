@@ -106,3 +106,17 @@ module languages.typedLambdaCalculus where
     proof (app {t₁ ∙ t₂} {e₂} e₁∷T e₂∷T) | (Λ x ∷ T' , e₁') , inj₁ t₁∙t₂⇒Λ = (Λ x ∷ T' , e₁') ∙ e₂ , inj₁ (congruence1 t₁∙t₂⇒Λ)
     ... | (Λ x ∷ T' , e₁') , inj₂ ()
     proof (app {Λ x ∷ T , e₁} {e₂} e₁∷T e₂∷T) = e₁ [ x / e₂ ] , inj₁ contraction
+
+
+  module PreservationProof where
+    open Preservation language
+
+    proof : preservation
+    proof num ()
+    proof (var x∷T) ()
+    proof (abs e∷T) ()
+    proof (app e₁∷T e₂∷T) contraction = {!!} -- We need a lemma that says that substition preserves types.
+    proof (app e₁∷T→T' e₂∷T) (congruence1 e₁⇒e₁') with proof e₁∷T→T' e₁⇒e₁'
+    ... | e₁'∷T→T' = app e₁'∷T→T' e₂∷T
+    proof (app e₁∷T→T' e₂∷T) (congruence2 e₂⇒e₂') with proof e₂∷T e₂⇒e₂'
+    ... | e₂'∷T = app e₁∷T→T' e₂'∷T
