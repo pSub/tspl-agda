@@ -27,6 +27,12 @@ module languages.typedLambdaCalculus where
   data Val : E → Set where
     num : ∀ {n} → Val ⌜ n ⌝
     abs : ∀ {x T e} → Val (Λ x ∷ T , e)
+
+  data _∈FV_ : V → E → Set where
+    var : ∀ x → x ∈FV (var x)
+    app1 : ∀ {x e₁ e₂} → x ∈FV e₁ → x ∈FV (e₁ ∙ e₂)
+    app2 : ∀ {x e₁ e₂} → x ∈FV e₂ → x ∈FV (e₁ ∙ e₂)
+    abs : ∀ {x y T e} → x ≢ y → x ∈FV e → x ∈FV (Λ y ∷ T , e)
   
   FV : E → List Char
   FV ⌜ x ⌝ = []
