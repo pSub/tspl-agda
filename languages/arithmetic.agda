@@ -42,6 +42,7 @@ module languages.arithmetic where
                ; V = V
                ; Γ = Γ
                ; ∅ = ∅
+               ; _,_∷_ = λ Γ v T → ∅
                ; _⊢_∷_ = _⊢_∷_
                }
 
