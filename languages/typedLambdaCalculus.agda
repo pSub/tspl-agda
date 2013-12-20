@@ -1,5 +1,7 @@
 open import Data.Bool hiding (T)
 open import Relation.Nullary
+open import Relation.Binary.Core hiding (_⇒_)
+open import Data.Empty
 open import Data.Nat
 open import Data.Char
 open import Data.Sum
@@ -117,6 +119,22 @@ module languages.typedLambdaCalculus where
 
   module PreservationProof where
     open Preservation language
+
+    ∈-reduce : ∀ {x y T U} Γ → (x ≡ y → ⊥) → (x , T) ∈ (Γ , y ∷ U) → (x , T) ∈ Γ
+    ∈-reduce ∅ x≢y yes with x≢y refl
+    ∈-reduce ∅ x≢y yes | ()
+    ∈-reduce (Γ , z ∷ Z) x≢y yes with x≢y refl
+    ∈-reduce (Γ , z ∷ Z) x≢y yes | ()
+
+    free-in-context : ∀ {x e Γ} T → x ∈FV e → Γ ⊢ e ∷ T → ∃ \T' → (x , T') ∈ Γ
+    free-in-context .Nat () num
+    free-in-context T (var x) (var x∷T) = T , x∷T
+    free-in-context .(T₁ ⟶ T₂) (abs x≢y x∈FVt₂) (abs {y} {t₂} {Γ} {T₁} {T₂} t₂∷T₂) with free-in-context T₂ x∈FVt₂ t₂∷T₂
+    free-in-context .(T₁ ⟶ T₂) (abs x≢y x∈FVt₂) (abs {y} {t₂} {Γ} {T₁} {T₂} t₂∷T₂) | T* , t₂∷T* = T* , ∈-reduce Γ x≢y t₂∷T*
+    free-in-context T (app1 x∈FVt₁) (app {t₁} {t₂} {T'} t₁∷T'→T t₂∷T') with free-in-context (T' ⟶ T) x∈FVt₁ t₁∷T'→T
+    ... | T* , x,T*∈Γ = T* , x,T*∈Γ
+    free-in-context T (app2 x∈FVt₂) (app {t₁} {t₂} {T'} t₁∷T'→T t₂∷T') with free-in-context T' x∈FVt₂ t₂∷T'
+    ... | T* , x,T*∈Γ = T* , x,T*∈Γ
 
     proof : preservation
     proof num ()
