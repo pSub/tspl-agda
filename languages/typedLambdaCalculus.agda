@@ -126,6 +126,13 @@ module languages.typedLambdaCalculus where
     ∈-reduce (Γ , z ∷ Z) x≢y yes with x≢y refl
     ∈-reduce (Γ , z ∷ Z) x≢y yes | ()
 
+    context-invariance : ∀ {e T Γ} → ∅ ⊢ e ∷ T → Γ ⊢ e ∷ T
+    context-invariance num = num
+    context-invariance (var ())
+    context-invariance (abs e∷T) = {!!}
+    context-invariance (app e₁∷T→T' e₂∷T') with context-invariance e₁∷T→T' | context-invariance e₂∷T'
+    ... | Γ⊢e₁∷T→T' | Γ⊢e₂∷T' = app Γ⊢e₁∷T→T' Γ⊢e₂∷T'
+
     free-in-context : ∀ {x e Γ} T → x ∈FV e → Γ ⊢ e ∷ T → ∃ \T' → (x , T') ∈ Γ
     free-in-context .Nat () num
     free-in-context T (var x) (var x∷T) = T , x∷T
@@ -136,11 +143,20 @@ module languages.typedLambdaCalculus where
     free-in-context T (app2 x∈FVt₂) (app {t₁} {t₂} {T'} t₁∷T'→T t₂∷T') with free-in-context T' x∈FVt₂ t₂∷T'
     ... | T* , x,T*∈Γ = T* , x,T*∈Γ
 
+    subst-preserves-typing : ∀ {t x v Γ U T} → (Γ , x ∷ U) ⊢ t ∷ T → ∅ ⊢ v ∷ U → Γ ⊢ (t [ x / v ]) ∷ T
+    subst-preserves-typing {⌜ n ⌝} num v∷U = num
+    subst-preserves-typing {var y} {x} t∷T v∷U with y == x
+    subst-preserves-typing {var x} (var yes) v∷U | true = {!!}
+    subst-preserves-typing {var y} t∷T v∷U | false = {!!}
+    subst-preserves-typing {e₁ ∙ e₂} (app e₁∷T→T' e₂∷T) v∷U with subst-preserves-typing e₁∷T→T' v∷U | subst-preserves-typing e₂∷T v∷U
+    ... | e₁[x/v]∷T→T' | e₂[x/v]∷T = app e₁[x/v]∷T→T' e₂[x/v]∷T
+    subst-preserves-typing {Λ y ∷ T* , t} {x} {v} (abs t∷T') v∷U = {!!}
+
     proof : preservation
     proof num ()
     proof (var x∷T) ()
     proof (abs e∷T) ()
-    proof (app e₁∷T e₂∷T) contraction = {!!} -- We need a lemma that says that substition preserves types.
+    proof (app (abs e₁∷T) e₂∷T) contraction = subst-preserves-typing e₁∷T e₂∷T
     proof (app e₁∷T→T' e₂∷T) (congruence1 e₁⇒e₁') with proof e₁∷T→T' e₁⇒e₁'
     ... | e₁'∷T→T' = app e₁'∷T→T' e₂∷T
     proof (app e₁∷T→T' e₂∷T) (congruence2 e₂⇒e₂') with proof e₂∷T e₂⇒e₂'
